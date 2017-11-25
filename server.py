@@ -1,15 +1,14 @@
 from jinja2 import StrictUndefined
 from flask import Flask, render_template, redirect, request, flash, session as browser_session
-from secrets import amm_chain, all_chain
-import pprint
 import requests
-import json
 
 app = Flask(__name__)
+	
+app.jinja_env.undefined = StrictUndefined
 
 @app.route('/')
 def home():
-	return render_template("home.html")
+  return render_template("index.html")
 
 @app.route('/work')
 def work():
@@ -27,37 +26,36 @@ def approach():
 def about():
 	return render_template("about.html")
 
+@app.route('/contact')
+def contact():
 
-
-@app.route('/contact', methods= ['POST'])
-def email():
-
-"""User writes info in login email    
-
-boxes and clicks submit, which directs here"""
+	"""User writes info in login email    
+	# boxes and clicks submit, which directs here"""
 	
-	fname = request.form.get("fname")
-	lname = request.form.get("lname")
-	email = request.form.get("email")
-	phone = request.form.get("phone")
-	message = request.form.get("message")
+	# fname = request.form.get("fname")
+	# lname = request.form.get("lname")
+	# email = request.form.get("email")
+	# phone = request.form.get("phone")
+
+	return render_template("contact.html")
 	
-	user = User.query.filter_by(fname=fname, lname=lname, email=email, phone=phone, message=message).first()
+@app.route('/send-email', methods=['POST'])
+def send_email():
+	subject = request.form.get("subject")
+	message = request.form.get("message")	
+	return requests.post(
+        "https://api.mailgun.net/v3/localhost:5000/messages",
+        auth=("api", "key-fec8a53f71b9c7d3e1e811ce7a7b69ac"),
+        data={"from": "Mailgun Sandbox <postmaster@localhost:5000>",
+              "to": "J <jkgriffin234@gmail.com>",
+              "subject": "{subject}".format(subject=subject),
+              "text": "{message}".format(message=message)})
 
+if __name__ == "__main__":
+	app.debug = True
 
+	connect_to_db(app)
 
-if user:
+	DebugToolbarExtension(app)
 
-session["user_id"] = user.user_id
-
-# print user.user_id
-
-flash("Thank You, %s" % user.name)
-
-
-
-
-
-return render_template(“contact.html", user=user)                                                                                                                                                                                                                                                  
-	
-	
+	app.run()
