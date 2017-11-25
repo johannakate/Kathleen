@@ -1,4 +1,4 @@
-# Kathleen website - Flask Python application
+# Kathleen's website - Flask Python application
 
 To run the app:
 
