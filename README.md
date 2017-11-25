@@ -36,6 +36,6 @@ Export the FLASK_APP variable so Flask knows which file to enter into
 
 `export FLASK_APP=server.py`
 
-Run the applications
+Run the application
 
 `flask run`
